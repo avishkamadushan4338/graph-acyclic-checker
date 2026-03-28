@@ -9,12 +9,11 @@ package com.avishka;
 
 public class SinkElimination {
 
-    /**
-     * Checks if graph is acyclic using sink elimination
-     */
     public static boolean isAcyclic(Graph graph) {
 
         System.out.println("Running Sink Elimination...");
+
+        int step = 1;
 
         while (!graph.isEmpty()) {
 
@@ -22,18 +21,19 @@ public class SinkElimination {
 
             // ❌ No sink → cycle exists
             if (sink == null) {
-                System.out.println("No sink found → Cycle detected!");
+                System.out.println("Step " + step + ": No sink found → Cycle detected!");
                 return false;
             }
 
-            // ✅ Print step (important for marks)
-            System.out.println("Removing sink: " + sink);
+            // ✅ Print step (required by spec)
+            System.out.println("Step " + step + ": Removing sink → " + sink);
 
-            // Remove sink
             graph.removeVertex(sink);
+
+            step++;
         }
 
-        // ✅ Graph fully removed → acyclic
+        // ✅ All vertices removed → acyclic
         System.out.println("Graph empty → Acyclic");
         return true;
     }
