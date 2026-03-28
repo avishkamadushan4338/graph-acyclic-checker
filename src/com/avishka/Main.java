@@ -1,6 +1,7 @@
 package com.avishka;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Name: Avishka Madushan
@@ -14,14 +15,10 @@ public class Main {
 
         System.out.println("===== Graph Acyclic Checker =====");
 
-        // 🔹 Run tests on both folders
         runFolder("benchmarks/acyclic", true);
         runFolder("benchmarks/cyclic", false);
     }
 
-    /**
-     * Runs all files inside a folder
-     */
     public static void runFolder(String folderPath, boolean expectedAcyclic) {
 
         File folder = new File(folderPath);
@@ -47,13 +44,11 @@ public class Main {
             // 🔹 Parse graph
             Graph graph = GraphParser.parseFile(file.getPath());
 
-            // 🔹 Print summary (not full graph)
             graph.printSummary();
 
-            // 🔹 Clone graph for safe processing
+            // 🔹 Clone for safe algorithm execution
             Graph workingGraph = graph.cloneGraph();
 
-            // 🔹 Run algorithm
             long start = System.nanoTime();
 
             boolean isAcyclic = SinkElimination.isAcyclic(workingGraph);
@@ -64,6 +59,22 @@ public class Main {
             System.out.println("Result: " + (isAcyclic ? "ACYCLIC (YES)" : "CYCLIC (NO)"));
             System.out.println("Expected: " + (expectedAcyclic ? "ACYCLIC" : "CYCLIC"));
             System.out.println("Time: " + (end - start) + " ns");
+
+            // 🔹 If cyclic → print actual cycle
+            if (!isAcyclic) {
+                List<Integer> cycle = CycleDetector.findCycle(graph);
+
+                if (cycle != null) {
+                    System.out.print("Cycle: ");
+                    for (int i = 0; i < cycle.size(); i++) {
+                        System.out.print(cycle.get(i));
+                        if (i < cycle.size() - 1) {
+                            System.out.print(" -> ");
+                        }
+                    }
+                    System.out.println();
+                }
+            }
 
             // 🔹 Validate correctness
             if (isAcyclic != expectedAcyclic) {
