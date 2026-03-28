@@ -6,7 +6,7 @@ import java.util.*;
  * Name: Avishka Madushan
  * Student ID: 20232557
  * Module: 5SENG003W Algorithms
- * Task 5: Cycle Detection (DFS)
+ * Task 5: Cycle Detection
  */
 
 public class CycleDetector {
@@ -14,12 +14,12 @@ public class CycleDetector {
     public static List<Integer> findCycle(Graph graph) {
 
         Set<Integer> visited = new HashSet<>();
-        Set<Integer> recursionStack = new HashSet<>();
+        Set<Integer> stack = new HashSet<>();
         Map<Integer, Integer> parent = new HashMap<>();
 
         for (Integer node : graph.getVertices()) {
             if (!visited.contains(node)) {
-                List<Integer> cycle = dfs(node, graph, visited, recursionStack, parent);
+                List<Integer> cycle = dfs(node, graph, visited, stack, parent);
                 if (cycle != null) return cycle;
             }
         }
@@ -28,25 +28,22 @@ public class CycleDetector {
     }
 
     private static List<Integer> dfs(Integer current,
-                                     Graph graph,
-                                     Set<Integer> visited,
-                                     Set<Integer> stack,
-                                     Map<Integer, Integer> parent) {
+                                    Graph graph,
+                                    Set<Integer> visited,
+                                    Set<Integer> stack,
+                                    Map<Integer, Integer> parent) {
 
         visited.add(current);
         stack.add(current);
 
         for (Integer neighbor : graph.getNeighbors(current)) {
 
-            // Continue DFS
             if (!visited.contains(neighbor)) {
                 parent.put(neighbor, current);
-
                 List<Integer> cycle = dfs(neighbor, graph, visited, stack, parent);
                 if (cycle != null) return cycle;
             }
 
-            // 🔴 Cycle detected
             else if (stack.contains(neighbor)) {
                 return buildCycle(current, neighbor, parent);
             }
@@ -71,8 +68,8 @@ public class CycleDetector {
         }
 
         cycle.add(start);
-
         Collections.reverse(cycle);
+
         return cycle;
     }
 }

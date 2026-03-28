@@ -1,14 +1,13 @@
 package com.avishka;
 
 import java.io.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 /**
  * Name: Avishka Madushan
  * Student ID: 20232557
  * Module: 5SENG003W Algorithms
- * Task 3: Graph Parser (FINAL FIXED VERSION)
+ * Task 3: Graph Parser
  */
 
 public class GraphParser {
@@ -19,13 +18,12 @@ public class GraphParser {
 
         try {
             BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(filePath), "UTF-8")
+                new InputStreamReader(new FileInputStream(filePath), "UTF-8")
             );
 
             String line;
             boolean firstLine = true;
 
-            // Regex to extract numbers
             Pattern pattern = Pattern.compile("\\d+");
 
             while ((line = reader.readLine()) != null) {
@@ -34,23 +32,24 @@ public class GraphParser {
 
                 if (line.isEmpty()) continue;
 
-                // 🔹 Skip first line (vertex count)
+                // ✅ FIRST LINE = TOTAL VERTICES
                 if (firstLine) {
+                    int totalVertices = Integer.parseInt(line);
+
+                    for (int i = 0; i < totalVertices; i++) {
+                        graph.addVertex(i);
+                    }
+
                     firstLine = false;
                     continue;
                 }
 
-                // 🔹 Extract numbers from line
                 Matcher matcher = pattern.matcher(line);
 
-                // If no numbers → skip
                 if (!matcher.find()) continue;
 
-                // First number = source node
                 int from = Integer.parseInt(matcher.group());
-                graph.addVertex(from);
 
-                // Remaining numbers = neighbors
                 while (matcher.find()) {
                     int to = Integer.parseInt(matcher.group());
                     graph.addEdge(from, to);
@@ -60,8 +59,8 @@ public class GraphParser {
             reader.close();
 
         } catch (Exception e) {
-            System.out.println("❌ Error reading file: " + filePath);
-            e.printStackTrace(); // helps debug if something still wrong
+            System.out.println("Error reading file: " + filePath);
+            e.printStackTrace();
         }
 
         return graph;
