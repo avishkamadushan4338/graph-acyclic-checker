@@ -1,92 +1,80 @@
 package com.avishka;
 
-// IIT Student ID: 20232557 | UOW Student ID: w2153540
-// Name: Avishka Madushan
-
 import java.util.*;
 
 /**
- * Directed graph represented using adjacency lists.
- * Maintains both outgoing and incoming edge maps for efficient
- * sink detection (O(V)) and vertex removal (O(degree(v))).
+ * Name: Avishka Madushan
+ * Student ID: 20232557
+ * Module: 5SENG003W Algorithms
+ * Task 2: Graph Data Structure
  */
+
 public class Graph {
 
-    private final Map<Integer, Set<Integer>> outEdges;
-    private final Map<Integer, Set<Integer>> inEdges;
-    private final Set<Integer> vertices;
+    // Adjacency list representation
+    private Map<Integer, List<Integer>> adjList;
 
     public Graph() {
-        outEdges = new HashMap<>();
-        inEdges  = new HashMap<>();
-        vertices = new HashSet<>();
+        adjList = new HashMap<>();
     }
 
-    /** Deep-copy constructor – used by the algorithm so the original is preserved. */
-    public Graph(Graph other) {
-        vertices = new HashSet<>(other.vertices);
-        outEdges = new HashMap<>();
-        inEdges  = new HashMap<>();
-        for (int v : other.outEdges.keySet()) {
-            outEdges.put(v, new HashSet<>(other.outEdges.get(v)));
-        }
-        for (int v : other.inEdges.keySet()) {
-            inEdges.put(v, new HashSet<>(other.inEdges.get(v)));
-        }
-    }
-
-    public void addVertex(int v) {
-        if (vertices.add(v)) {
-            outEdges.put(v, new HashSet<>());
-            inEdges.put(v, new HashSet<>());
-        }
-    }
-
+    // ✅ Add edge (directed)
     public void addEdge(int from, int to) {
-        addVertex(from);
-        addVertex(to);
-        outEdges.get(from).add(to);
-        inEdges.get(to).add(from);
+        adjList.putIfAbsent(from, new ArrayList<>());
+        adjList.get(from).add(to);
+
+        // Ensure destination node exists
+        adjList.putIfAbsent(to, new ArrayList<>());
     }
 
-    public boolean isEmpty() {
-        return vertices.isEmpty();
+    // ✅ Get all vertices
+    public Set<Integer> getVertices() {
+        return adjList.keySet();
     }
 
-    /**
-     * Returns any sink vertex (no outgoing edges), or null if none exists.
-     * O(V) worst case.
-     */
+    // ✅ Find a sink (node with no outgoing edges)
     public Integer findSink() {
-        for (int v : vertices) {
-            if (outEdges.get(v).isEmpty()) {
-                return v;
+        for (Integer node : adjList.keySet()) {
+            if (adjList.get(node).isEmpty()) {
+                return node;
             }
         }
-        return null;
+        return null; // No sink found
     }
 
-    /**
-     * Removes vertex v and all edges incident to it.
-     * O(degree(v)) due to the reverse-edge map.
-     */
-    public void removeVertex(int v) {
-        for (int to : outEdges.get(v)) {
-            inEdges.get(to).remove(v);
+    // ✅ Remove a vertex (IMPORTANT for algorithm)
+    public void removeVertex(int vertex) {
+
+        // Remove the vertex itself
+        adjList.remove(vertex);
+
+        // Remove all incoming edges to this vertex
+        for (List<Integer> neighbors : adjList.values()) {
+            neighbors.remove(Integer.valueOf(vertex));
         }
-        for (int from : inEdges.get(v)) {
-            outEdges.get(from).remove(v);
+    }
+
+    // ✅ Check if graph is empty
+    public boolean isEmpty() {
+        return adjList.isEmpty();
+    }
+
+    // ✅ Print graph (for debugging / output)
+    public void printGraph() {
+        System.out.println("Graph:");
+        for (Integer node : adjList.keySet()) {
+            System.out.println(node + " -> " + adjList.get(node));
         }
-        outEdges.remove(v);
-        inEdges.remove(v);
-        vertices.remove(v);
     }
 
-    public Set<Integer> getVertices() {
-        return Collections.unmodifiableSet(vertices);
-    }
+    // ✅ Deep copy (VERY IMPORTANT for algorithm)
+    public Graph cloneGraph() {
+        Graph copy = new Graph();
 
-    public Set<Integer> getOutNeighbors(int v) {
-        return Collections.unmodifiableSet(outEdges.getOrDefault(v, Collections.emptySet()));
+        for (Integer node : adjList.keySet()) {
+            copy.adjList.put(node, new ArrayList<>(adjList.get(node)));
+        }
+
+        return copy;
     }
 }
