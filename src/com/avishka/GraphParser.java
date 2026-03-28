@@ -13,16 +13,6 @@ import java.io.IOException;
 
 public class GraphParser {
 
-    /**
-     * Parses a graph file and returns a Graph object.
-     * Supports adjacency list format:
-     *
-     * Example:
-     * 80
-     * 0 -> [33]
-     * 1 -> [59, 62, 41]
-     * ...
-     */
     public static Graph parseFile(String filePath) {
 
         Graph graph = new Graph();
@@ -36,37 +26,34 @@ public class GraphParser {
 
                 line = line.trim();
 
-                // Skip empty lines
                 if (line.isEmpty()) continue;
 
-                // 🔹 First line = number of vertices (ignore it)
+                // 🔹 Skip first line (vertex count)
                 if (firstLine) {
                     firstLine = false;
                     continue;
                 }
 
-                // 🔹 Split "node -> [neighbors]"
+                // 🔹 Only process lines with "->"
+                if (!line.contains("->")) continue;
+
                 String[] parts = line.split("->");
 
                 if (parts.length != 2) continue;
 
-                // Left side (node)
                 int from = Integer.parseInt(parts[0].trim());
 
-                // Right side (neighbors list)
-                String neighborsPart = parts[1]
-                        .replace("[", "")
-                        .replace("]", "")
-                        .trim();
+                // Clean right side
+                String right = parts[1].trim();
+                right = right.replace("[", "").replace("]", "");
 
                 // Ensure vertex exists
                 graph.addVertex(from);
 
                 // If no outgoing edges
-                if (neighborsPart.isEmpty()) continue;
+                if (right.isEmpty()) continue;
 
-                // Split neighbors
-                String[] neighbors = neighborsPart.split(",");
+                String[] neighbors = right.split(",");
 
                 for (String n : neighbors) {
                     int to = Integer.parseInt(n.trim());
