@@ -1,34 +1,59 @@
 package com.avishka;
 
-// IIT Student ID: 20232557 | UOW Student ID: w2153540
-// Name: Avishka Madushan
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * Parses a directed graph from a plain-text file.
- * Each non-empty line must contain two integers separated by whitespace,
- * representing a directed edge from the first vertex to the second.
+ * Name: Avishka Madushan
+ * Student ID: 20232557
+ * Module: 5SENG003W Algorithms
+ * Task 3: Graph Parser
  */
+
 public class GraphParser {
 
-    public static Graph parse(String filePath) throws IOException {
+    // ✅ Read file and convert to Graph
+    public static Graph parseFile(String filePath) {
+
         Graph graph = new Graph();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+
             String line;
-            while ((line = br.readLine()) != null) {
+
+            while ((line = reader.readLine()) != null) {
+
+                // Remove spaces
                 line = line.trim();
-                if (line.isEmpty()) {
+
+                // Skip empty lines
+                if (line.isEmpty()) continue;
+
+                // Split numbers (handles spaces/tabs)
+                String[] parts = line.split("\\s+");
+
+                // Validate format
+                if (parts.length != 2) {
+                    System.out.println("Invalid line: " + line);
                     continue;
                 }
-                String[] parts = line.split("\\s+");
-                int from = Integer.parseInt(parts[0]);
-                int to   = Integer.parseInt(parts[1]);
-                graph.addEdge(from, to);
+
+                try {
+                    int from = Integer.parseInt(parts[0]);
+                    int to = Integer.parseInt(parts[1]);
+
+                    graph.addEdge(from, to);
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid number in line: " + line);
+                }
             }
+
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + filePath);
         }
+
         return graph;
     }
 }
