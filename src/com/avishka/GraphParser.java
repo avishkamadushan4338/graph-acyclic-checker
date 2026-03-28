@@ -13,7 +13,16 @@ import java.io.IOException;
 
 public class GraphParser {
 
-    // ✅ Read file and convert to Graph
+    /**
+     * Parses a graph file and returns a Graph object.
+     * Supports adjacency list format:
+     *
+     * Example:
+     * 80
+     * 0 -> [33]
+     * 1 -> [59, 62, 41]
+     * ...
+     */
     public static Graph parseFile(String filePath) {
 
         Graph graph = new Graph();
@@ -21,32 +30,47 @@ public class GraphParser {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
 
             String line;
+            boolean firstLine = true;
 
             while ((line = reader.readLine()) != null) {
 
-                // Remove spaces
                 line = line.trim();
 
                 // Skip empty lines
                 if (line.isEmpty()) continue;
 
-                // Split numbers (handles spaces/tabs)
-                String[] parts = line.split("\\s+");
-
-                // Validate format
-                if (parts.length != 2) {
-                    System.out.println("Invalid line: " + line);
+                // 🔹 First line = number of vertices (ignore it)
+                if (firstLine) {
+                    firstLine = false;
                     continue;
                 }
 
-                try {
-                    int from = Integer.parseInt(parts[0]);
-                    int to = Integer.parseInt(parts[1]);
+                // 🔹 Split "node -> [neighbors]"
+                String[] parts = line.split("->");
 
+                if (parts.length != 2) continue;
+
+                // Left side (node)
+                int from = Integer.parseInt(parts[0].trim());
+
+                // Right side (neighbors list)
+                String neighborsPart = parts[1]
+                        .replace("[", "")
+                        .replace("]", "")
+                        .trim();
+
+                // Ensure vertex exists
+                graph.addVertex(from);
+
+                // If no outgoing edges
+                if (neighborsPart.isEmpty()) continue;
+
+                // Split neighbors
+                String[] neighbors = neighborsPart.split(",");
+
+                for (String n : neighbors) {
+                    int to = Integer.parseInt(n.trim());
                     graph.addEdge(from, to);
-
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid number in line: " + line);
                 }
             }
 
