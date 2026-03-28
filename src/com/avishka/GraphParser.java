@@ -1,14 +1,14 @@
 package com.avishka;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Name: Avishka Madushan
  * Student ID: 20232557
  * Module: 5SENG003W Algorithms
- * Task 3: Graph Parser
+ * Task 3: Graph Parser (FINAL FIXED VERSION)
  */
 
 public class GraphParser {
@@ -17,10 +17,16 @@ public class GraphParser {
 
         Graph graph = new Graph();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try {
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(filePath), "UTF-8")
+            );
 
             String line;
             boolean firstLine = true;
+
+            // Regex to extract numbers
+            Pattern pattern = Pattern.compile("\\d+");
 
             while ((line = reader.readLine()) != null) {
 
@@ -34,35 +40,28 @@ public class GraphParser {
                     continue;
                 }
 
-                // 🔹 Only process lines with "->"
-                if (!line.contains("->")) continue;
+                // 🔹 Extract numbers from line
+                Matcher matcher = pattern.matcher(line);
 
-                String[] parts = line.split("->");
+                // If no numbers → skip
+                if (!matcher.find()) continue;
 
-                if (parts.length != 2) continue;
-
-                int from = Integer.parseInt(parts[0].trim());
-
-                // Clean right side
-                String right = parts[1].trim();
-                right = right.replace("[", "").replace("]", "");
-
-                // Ensure vertex exists
+                // First number = source node
+                int from = Integer.parseInt(matcher.group());
                 graph.addVertex(from);
 
-                // If no outgoing edges
-                if (right.isEmpty()) continue;
-
-                String[] neighbors = right.split(",");
-
-                for (String n : neighbors) {
-                    int to = Integer.parseInt(n.trim());
+                // Remaining numbers = neighbors
+                while (matcher.find()) {
+                    int to = Integer.parseInt(matcher.group());
                     graph.addEdge(from, to);
                 }
             }
 
-        } catch (IOException e) {
-            System.out.println("Error reading file: " + filePath);
+            reader.close();
+
+        } catch (Exception e) {
+            System.out.println("❌ Error reading file: " + filePath);
+            e.printStackTrace(); // helps debug if something still wrong
         }
 
         return graph;
