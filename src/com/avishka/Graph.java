@@ -18,7 +18,12 @@ public class Graph {
         adjList = new HashMap<>();
     }
 
-    // ✅ Add edge (directed)
+    // ✅ Add a vertex (important for nodes with no edges)
+    public void addVertex(int v) {
+        adjList.putIfAbsent(v, new ArrayList<>());
+    }
+
+    // ✅ Add directed edge
     public void addEdge(int from, int to) {
         adjList.putIfAbsent(from, new ArrayList<>());
         adjList.get(from).add(to);
@@ -32,7 +37,12 @@ public class Graph {
         return adjList.keySet();
     }
 
-    // ✅ Find a sink (node with no outgoing edges)
+    // ✅ Get neighbors of a node
+    public List<Integer> getNeighbors(int node) {
+        return adjList.getOrDefault(node, new ArrayList<>());
+    }
+
+    // ✅ Find a sink (node with NO outgoing edges)
     public Integer findSink() {
         for (Integer node : adjList.keySet()) {
             if (adjList.get(node).isEmpty()) {
@@ -42,13 +52,13 @@ public class Graph {
         return null; // No sink found
     }
 
-    // ✅ Remove a vertex (IMPORTANT for algorithm)
+    // ✅ Remove a vertex and all related edges
     public void removeVertex(int vertex) {
 
         // Remove the vertex itself
         adjList.remove(vertex);
 
-        // Remove all incoming edges to this vertex
+        // Remove all incoming edges
         for (List<Integer> neighbors : adjList.values()) {
             neighbors.remove(Integer.valueOf(vertex));
         }
@@ -59,15 +69,7 @@ public class Graph {
         return adjList.isEmpty();
     }
 
-    // ✅ Print graph (for debugging / output)
-    public void printGraph() {
-        System.out.println("Graph:");
-        for (Integer node : adjList.keySet()) {
-            System.out.println(node + " -> " + adjList.get(node));
-        }
-    }
-
-    // ✅ Deep copy (VERY IMPORTANT for algorithm)
+    // ✅ Clone graph (VERY IMPORTANT for algorithm)
     public Graph cloneGraph() {
         Graph copy = new Graph();
 
@@ -76,5 +78,22 @@ public class Graph {
         }
 
         return copy;
+    }
+
+    // ✅ Get number of vertices
+    public int size() {
+        return adjList.size();
+    }
+
+    // ✅ Print graph (only for small graphs)
+    public void printGraph() {
+        for (Integer node : adjList.keySet()) {
+            System.out.println(node + " -> " + adjList.get(node));
+        }
+    }
+
+    // ✅ Print summary (for large benchmark graphs)
+    public void printSummary() {
+        System.out.println("Graph loaded with " + adjList.size() + " vertices.");
     }
 }
