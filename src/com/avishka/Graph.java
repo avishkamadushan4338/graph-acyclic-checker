@@ -11,14 +11,13 @@ import java.util.*;
 
 public class Graph {
 
-    // Adjacency list representation
     private Map<Integer, List<Integer>> adjList;
 
     public Graph() {
         adjList = new HashMap<>();
     }
 
-    // ✅ Add a vertex (important for nodes with no edges)
+    // ✅ Add vertex
     public void addVertex(int v) {
         adjList.putIfAbsent(v, new ArrayList<>());
     }
@@ -37,39 +36,36 @@ public class Graph {
         return adjList.keySet();
     }
 
-    // ✅ Get neighbors of a node
+    // ✅ Get neighbors
     public List<Integer> getNeighbors(int node) {
         return adjList.getOrDefault(node, new ArrayList<>());
     }
 
-    // ✅ Find a sink (node with NO outgoing edges)
+    // ✅ Find sink (node with NO outgoing edges)
     public Integer findSink() {
         for (Integer node : adjList.keySet()) {
             if (adjList.get(node).isEmpty()) {
                 return node;
             }
         }
-        return null; // No sink found
+        return null;
     }
 
-    // ✅ Remove a vertex and all related edges
+    // ✅ Remove vertex + incoming edges
     public void removeVertex(int vertex) {
-
-        // Remove the vertex itself
         adjList.remove(vertex);
 
-        // Remove all incoming edges
         for (List<Integer> neighbors : adjList.values()) {
             neighbors.remove(Integer.valueOf(vertex));
         }
     }
 
-    // ✅ Check if graph is empty
+    // ✅ Check if graph empty
     public boolean isEmpty() {
         return adjList.isEmpty();
     }
 
-    // ✅ Clone graph (VERY IMPORTANT for algorithm)
+    // ✅ Clone graph (important for algorithm)
     public Graph cloneGraph() {
         Graph copy = new Graph();
 
@@ -80,19 +76,19 @@ public class Graph {
         return copy;
     }
 
-    // ✅ Get number of vertices
+    // ✅ Number of vertices
     public int size() {
         return adjList.size();
     }
 
-    // ✅ Print graph (only for small graphs)
+    // ✅ Debug print (small graphs only)
     public void printGraph() {
         for (Integer node : adjList.keySet()) {
             System.out.println(node + " -> " + adjList.get(node));
         }
     }
 
-    // ✅ Print summary (for large benchmark graphs)
+    // ✅ Summary print (for large graphs)
     public void printSummary() {
         System.out.println("Graph loaded with " + adjList.size() + " vertices.");
     }
