@@ -15,25 +15,36 @@ public class Main {
 
         System.out.println("===== Graph Acyclic Checker =====");
 
-        runFolder("benchmarks/acyclic", true);
-        runFolder("benchmarks/cyclic", false);
+        boolean allCorrect = true;
+
+        allCorrect &= runFolder("benchmarks/acyclic", true);
+        allCorrect &= runFolder("benchmarks/cyclic", false);
+
+        // ✅ FINAL SUMMARY
+        if (allCorrect) {
+            System.out.println("\n🎉 All files processed correctly!");
+        } else {
+            System.out.println("\n⚠ Some files produced incorrect results.");
+        }
     }
 
-    public static void runFolder(String folderPath, boolean expectedAcyclic) {
+    public static boolean runFolder(String folderPath, boolean expectedAcyclic) {
 
         File folder = new File(folderPath);
 
         if (!folder.exists()) {
             System.out.println("Folder not found: " + folderPath);
-            return;
+            return false;
         }
 
         File[] files = folder.listFiles();
 
         if (files == null) {
             System.out.println("No files found in: " + folderPath);
-            return;
+            return false;
         }
+
+        boolean allCorrect = true;
 
         System.out.println("\n===== Testing: " + folderPath + " =====");
 
@@ -41,26 +52,19 @@ public class Main {
 
             System.out.println("\nFile: " + file.getName());
 
-            // 🔹 Parse graph
             Graph graph = GraphParser.parseFile(file.getPath());
-
             graph.printSummary();
 
-            // 🔹 Clone for safe algorithm execution
             Graph workingGraph = graph.cloneGraph();
 
             long start = System.nanoTime();
-
             boolean isAcyclic = SinkElimination.isAcyclic(workingGraph);
-
             long end = System.nanoTime();
 
-            // 🔹 Output result
             System.out.println("Result: " + (isAcyclic ? "ACYCLIC (YES)" : "CYCLIC (NO)"));
             System.out.println("Expected: " + (expectedAcyclic ? "ACYCLIC" : "CYCLIC"));
             System.out.println("Time: " + (end - start) + " ns");
 
-            // 🔹 If cyclic → print actual cycle
             if (!isAcyclic) {
                 List<Integer> cycle = CycleDetector.findCycle(graph);
 
@@ -68,20 +72,20 @@ public class Main {
                     System.out.print("Cycle: ");
                     for (int i = 0; i < cycle.size(); i++) {
                         System.out.print(cycle.get(i));
-                        if (i < cycle.size() - 1) {
-                            System.out.print(" -> ");
-                        }
+                        if (i < cycle.size() - 1) System.out.print(" -> ");
                     }
                     System.out.println();
                 }
             }
 
-            // 🔹 Validate correctness
             if (isAcyclic != expectedAcyclic) {
                 System.out.println("❌ ERROR: Incorrect result!");
+                allCorrect = false;
             } else {
                 System.out.println("✅ Correct");
             }
         }
+
+        return allCorrect;
     }
 }
