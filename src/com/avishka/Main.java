@@ -1,16 +1,27 @@
 package com.avishka;
 
+import java.io.File;
+
 public class Main {
     public static void main(String[] args) {
 
         System.out.println("Graph Acyclic Checker Running...");
 
-        // 🔹 Read graph from file
-        String filePath = "benchmark/acyclic/file1.txt"; // change file name
+        File folder = new File("benchmarks/acyclic");
 
-        Graph graph = GraphParser.parseFile(filePath);
+        File[] files = folder.listFiles();
 
-        // 🔹 Print graph
-        graph.printGraph();
+        if (files == null) {
+            System.out.println("Folder not found!");
+            return;
+        }
+
+        for (File file : files) {
+            System.out.println("\nReading: " + file.getName());
+
+            Graph graph = GraphParser.parseFile(file.getPath());
+
+            graph.printGraph();
+        }
     }
 }
